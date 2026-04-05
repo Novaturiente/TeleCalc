@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="32dp"
+    android:background="@color/calc_background">
+
+    <TextView
+        android:id="@+id/setup_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Set your secret code"
+        android:textSize="24sp"
+        android:textColor="@color/calc_display_text"
+        android:fontFamily="sans-serif-medium" />
+
+    <TextView
+        android:id="@+id/setup_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Enter a number. Any math expression that equals this number will unlock the app."
+        android:textSize="14sp"
+        android:textColor="#9E9E9E"
+        android:gravity="center"
+        android:fontFamily="sans-serif" />
+
+    <EditText
+        android:id="@+id/setup_code_input"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:gravity="center"
+        android:inputType="numberSigned"
+        android:textSize="32sp"
+        android:textColor="@color/calc_display_text"
+        android:backgroundTint="@color/calc_setup_accent"
+        android:fontFamily="sans-serif-medium" />
+
+    <Button
+        android:id="@+id/setup_confirm_button"
+        android:layout_width="200dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="24dp"
+        android:text="Confirm"
+        android:textSize="16sp"
+        android:textColor="@color/calc_equals_text"
+        android:background="@drawable/calc_button_equals"
+        android:fontFamily="sans-serif-medium" />
+
+</LinearLayout>

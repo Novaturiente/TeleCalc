@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/calc_background">
+
+    <!-- Display area -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="end|bottom"
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/calc_expression"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:textSize="24sp"
+            android:textColor="#9E9E9E"
+            android:maxLines="2"
+            android:ellipsize="start"
+            android:fontFamily="sans-serif-light" />
+
+        <TextView
+            android:id="@+id/calc_result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:text="0"
+            android:textSize="48sp"
+            android:textColor="@color/calc_display_text"
+            android:maxLines="1"
+            android:ellipsize="start"
+            android:fontFamily="sans-serif" />
+    </LinearLayout>
+
+    <!-- Button grid -->
+    <GridLayout
+        android:id="@+id/calc_grid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="4"
+        android:rowCount="5"
+        android:padding="8dp"
+        android:useDefaultMargins="false">
+
+        <!-- Buttons are created programmatically in CalculatorActivity -->
+
+    </GridLayout>
+
+</LinearLayout>
