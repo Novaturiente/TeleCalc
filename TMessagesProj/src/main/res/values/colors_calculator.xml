@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="calc_background">#F5F0FF</color>
+    <color name="calc_display_text">#49454F</color>
+    <color name="calc_number_bg">#E6E0E9</color>
+    <color name="calc_number_text">#1C1B1F</color>
+    <color name="calc_operator_bg">#E8DEF8</color>
+    <color name="calc_operator_text">#6750A4</color>
+    <color name="calc_equals_bg">#6750A4</color>
+    <color name="calc_equals_text">#FFFFFF</color>
+    <color name="calc_ripple">#1F6750A4</color>
+    <color name="calc_setup_accent">#6750A4</color>
+</resources>
