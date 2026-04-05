@@ -1432,7 +1432,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 "Make Memory Dump",
                 BuildVars.DEBUG_PRIVATE_VERSION ? (SharedConfig.fastWallpaperDisabled ? "enable wallpaper shader" : "disable wallpaper shader") : null,
                 (SharedConfig.frameMetricsEnabled ? "hide frame metrics" : "show frame metrics"),
-                BuildVars.DEBUG_PRIVATE_VERSION ? (SharedConfig.shadowsInSections ? "disable shadows in settings" : "enable shadows in settings") : null
+                BuildVars.DEBUG_PRIVATE_VERSION ? (SharedConfig.shadowsInSections ? "disable shadows in settings" : "enable shadows in settings") : null,
+                "Change calculator code"
         };
 
         builder.setItems(items, (dialog, which) -> {
@@ -1737,10 +1738,111 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             } else if (which == 40) {
                 final SharedPreferences prefs = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
                 prefs.edit().putBoolean("shadowsInSections", SharedConfig.shadowsInSections = !SharedConfig.shadowsInSections).apply();
+            } else if (which == 41) {
+                showChangeCalculatorCodeDialog();
             }
         });
         builder.setNegativeButton(getString(R.string.Cancel), null);
         showDialog(builder.create());
+    }
+
+    private void showChangeCalculatorCodeDialog() {
+        Context context = getParentActivity();
+        if (context == null) return;
+
+        SharedPreferences calcPrefs = context.getSharedPreferences("calculator_prefs", Context.MODE_PRIVATE);
+
+        // Step 1: Verify current code
+        AlertDialog.Builder verifyBuilder = new AlertDialog.Builder(context, resourceProvider);
+        verifyBuilder.setTitle("Enter current code");
+
+        final EditText verifyInput = new EditText(context);
+        verifyInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_FLAG_SIGNED);
+        verifyInput.setPadding(dp(24), dp(8), dp(24), dp(8));
+        verifyBuilder.setView(verifyInput);
+
+        verifyBuilder.setPositiveButton(getString(R.string.OK), (dialog, w) -> {
+            String input = verifyInput.getText().toString().trim();
+            String storedHash = calcPrefs.getString("secret_hash", "");
+            String storedSalt = calcPrefs.getString("secret_salt", "");
+
+            String inputHash = hashCalculatorCode(input, storedSalt);
+            if (!inputHash.equals(storedHash)) {
+                Toast.makeText(context, "Wrong code", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Step 2: Enter new code
+            AlertDialog.Builder newBuilder = new AlertDialog.Builder(context, resourceProvider);
+            newBuilder.setTitle("Enter new code");
+
+            final EditText newInput = new EditText(context);
+            newInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_FLAG_SIGNED);
+            newInput.setPadding(dp(24), dp(8), dp(24), dp(8));
+            newBuilder.setView(newInput);
+
+            newBuilder.setPositiveButton(getString(R.string.OK), (dialog2, w2) -> {
+                String newCode = newInput.getText().toString().trim();
+                if (newCode.isEmpty()) {
+                    Toast.makeText(context, "Code cannot be empty", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Step 3: Confirm new code
+                AlertDialog.Builder confirmBuilder = new AlertDialog.Builder(context, resourceProvider);
+                confirmBuilder.setTitle("Confirm new code");
+
+                final EditText confirmInput = new EditText(context);
+                confirmInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_FLAG_SIGNED);
+                confirmInput.setPadding(dp(24), dp(8), dp(24), dp(8));
+                confirmBuilder.setView(confirmInput);
+
+                confirmBuilder.setPositiveButton(getString(R.string.OK), (dialog3, w3) -> {
+                    String confirmCode = confirmInput.getText().toString().trim();
+                    if (!newCode.equals(confirmCode)) {
+                        Toast.makeText(context, "Codes don't match", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    // Save new code
+                    byte[] saltBytes = new byte[16];
+                    new java.security.SecureRandom().nextBytes(saltBytes);
+                    StringBuilder sb = new StringBuilder();
+                    for (byte b : saltBytes) {
+                        sb.append(String.format("%02x", b));
+                    }
+                    String newSalt = sb.toString();
+                    String newHash = hashCalculatorCode(newCode, newSalt);
+
+                    calcPrefs.edit()
+                            .putString("secret_hash", newHash)
+                            .putString("secret_salt", newSalt)
+                            .apply();
+
+                    Toast.makeText(context, "Calculator code updated", Toast.LENGTH_SHORT).show();
+                });
+                confirmBuilder.setNegativeButton(getString(R.string.Cancel), null);
+                showDialog(confirmBuilder.create());
+            });
+            newBuilder.setNegativeButton(getString(R.string.Cancel), null);
+            showDialog(newBuilder.create());
+        });
+        verifyBuilder.setNegativeButton(getString(R.string.Cancel), null);
+        showDialog(verifyBuilder.create());
+    }
+
+    private String hashCalculatorCode(String code, String salt) {
+        try {
+            java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest((code + salt).getBytes("UTF-8"));
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hash) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void listCodecs(String type, StringBuilder info) {
