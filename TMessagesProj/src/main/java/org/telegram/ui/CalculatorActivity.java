@@ -113,6 +113,20 @@ public class CalculatorActivity extends Activity {
                 .putString(KEY_SECRET_SALT, salt)
                 .putBoolean(KEY_SETUP_COMPLETE, true)
                 .apply();
+
+        // Disable notification previews to avoid leaking message content
+        disableNotificationPreviews();
+    }
+
+    private void disableNotificationPreviews() {
+        for (int i = 0; i < org.telegram.messenger.UserConfig.MAX_ACCOUNT_COUNT; i++) {
+            SharedPreferences prefs = org.telegram.messenger.MessagesController.getNotificationsSettings(i);
+            prefs.edit()
+                    .putBoolean("EnablePreviewAll", false)
+                    .putBoolean("EnablePreviewGroup", false)
+                    .putBoolean("EnablePreviewChannel", false)
+                    .apply();
+        }
     }
 
     private String generateSalt() {
