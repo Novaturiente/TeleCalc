@@ -1,57 +1,94 @@
-# Fork Client — Unofficial Telegram Messenger for Android
-![image](https://raw.githubusercontent.com/Forkgram/TelegramAndroid/58938f6bbe4159b90c38d9b94c9a70d57bedf3e0/TMessagesProj/src/main/res/drawable-xxhdpi/ic_launcher.png)  
-Fork Client is a fork of the official Telegram for Android application.  
-[<img src="https://f-droid.org/badge/get-it-on.png"
-      alt="Get it on F-Droid"
-      height="80">](https://f-droid.org/app/org.forkgram.messenger)
+# TeleCalc — Telegram client disguised as a calculator
 
-![Build Status](https://travis-ci.org//Forkgram/TelegramAndroid.svg?branch=dev)
-[![Github All Releases](https://img.shields.io/github/downloads/Forkgram/TelegramAndroid/total.svg)](https://github.com/Forkgram/TelegramAndroid/releases)
+A privacy-focused Telegram client for Android that hides behind a fully functional calculator. Enter your secret math expression to unlock Telegram.
 
-## Features:
+## How It Works
 
-- `Delete for everyone` option enabled by default.
-- Removed pencil floating icon.
-- Original message date for forwarded messages.
-- Smaller header in the sidebar.
-- Option to disable in-app camera.
-- Option to keep unmuted unread chats right after pinned dialogs.
-- See the correct full number of subscribers in groups/channels.
-- Option to go to the first message of a chat.
-- Quick share button for every media in private chats.
-- Option to start recording video messages with the rear camera.
-- Unlimited unarchived pinned chats (turns their sync off).
-- Option to disable big emojis.
-- Forward messages without quoting the original sender.
-- Added a lot of self-destruct timer's options in secret chats.
-  - Added 2, 3, 4, 5, 10, 15, 20, 30, 40 minutes.
-  - Added 2, 3, 5, 8, 12, 16 hours.
-  - Added 2, 3, 7 and 32 days.
-- Tap on cloud GIF with pre-written text will send GIF with this text as caption.
-- Tap on sticker with pre-written text will send both.
-- Added upload date for profile photos.
-- Added ability to see the profile info from the dialogs list via context menu.
-- Added ability to see unread count when you want to mark as read multiple dialogs.
-- Option to directly open the archive on pulldown
+1. **First launch** — Set a secret numeric code (e.g., `1234`)
+2. **Every launch after** — The app opens as a Material You calculator
+3. **To unlock Telegram** — Type any math expression whose result equals your secret code (e.g., `617 x 2 =` gives `1234`) and Telegram opens instantly
+4. **To everyone else** — It looks and works like a normal calculator app
+
+The app appears as "Calculator" in your launcher, app drawer, and recents screen with a calculator icon. Notifications are configured to hide message content by default.
+
+## Features
+
+### Calculator Decoy
+- Material You styled calculator with light purple palette
+- Fully functional basic calculator (+, -, x, /)
+- Secret code stored as salted SHA-256 hash
+- Instant transition to Telegram on correct code
+- Re-entry required every time the app is reopened
+- `FLAG_SECURE` prevents screenshots of the calculator screen
+- Notification previews auto-disabled to prevent content leaking
+- Change your secret code from the hidden debug menu (tap version number twice in Settings)
+
+### Inherited from Forkgram
+- `Delete for everyone` option enabled by default
+- Original message date for forwarded messages
+- Online colored status dots
+- Quick share button for media in private chats
 - PiP mode for YouTube's in-app player
-- Added an option to show colored dots to quickly see when a person was last online  
-  - Yellow dot: last seen 15 minutes ago or less  
-  - Orange dot: last seen 30 minutes ago or less  
-  - Red dot: last seen 60 minutes ago or less 
+- Forward messages without quoting the original sender
+- Unlimited pinned chats
+- Fast Forward with anonymous and no-text options
+- Hidden proxy string, hidden account names in drawer
+- And many more privacy and convenience features
 
-### Privacy Features:
+## Downloads
 
-- Hidden `Connecting to proxy...` string.
-- Accounts names hidden from the side drawer.
-- Menus to edit username/bio/name moved in the debug menu (two long tap on version section).
-- Option to hide avatar/title of a chat from the dialogs list.
-- Option to not send stickers information in photos.
-- Some features are taken from the [Telegram FOSS](https://github.com/Telegram-FOSS-Team/Telegram-FOSS).
+Download the latest APK from [Releases](https://github.com/Novaturiente/TeleCalc/releases).
 
+## Building
 
+### Prerequisites
+- JDK 17
+- Android SDK (platform 35, build-tools 35.0.0)
+- NDK 21.4.7075529 and 23.2.8568313
+- cmake, go, gperf, meson, ninja, yasm
 
-## Downloads:
-You can download binaries from Releases or from my [Telegram channel Forkgram](https://t.me/forkgram).
+### Steps
 
-## Building instructions for Debian 13:
-[BUILDING.md](BUILDING.md)
+1. Clone with submodules:
+   ```bash
+   git clone --recursive https://github.com/Novaturiente/TeleCalc.git
+   ```
+
+2. Set up `gradle.properties` with your [Telegram API credentials](https://core.telegram.org/api/obtaining_api_id):
+   ```
+   APP_ID=your_api_id
+   APP_HASH=your_api_hash
+   ```
+
+3. Build native dependencies:
+   ```bash
+   cd TMessagesProj/jni
+   export NDK=/path/to/ndk/21.4.7075529
+   export NINJA_PATH=/usr/bin/ninja
+   ./build_libvpx_clang.sh
+   ./build_ffmpeg_clang.sh
+   ./patch_ffmpeg.sh
+   ./patch_boringssl.sh
+   ./build_boringssl.sh
+   ```
+
+4. Build the APK:
+   ```bash
+   ./gradlew assembleAfatRelease
+   ```
+
+## Credits & Attribution
+
+TeleCalc is built on top of open-source work by others:
+
+- **[Telegram for Android](https://github.com/DrKLO/Telegram)** — the official Telegram client by Nikolai Kudashov, licensed under [GNU GPL v2](LICENSE)
+- **[Forkgram](https://github.com/Forkgram/TelegramAndroid)** — an unofficial Telegram fork that adds privacy features and UI improvements, which TeleCalc is directly based on
+- **[Telegram FOSS](https://github.com/Telegram-FOSS-Team/Telegram-FOSS)** — some features incorporated via Forkgram
+
+TeleCalc adds the calculator decoy layer on top of Forkgram's codebase. All upstream features and fixes are preserved.
+
+## License
+
+This project is licensed under the [GNU General Public License v2.0](LICENSE), the same license as the original Telegram for Android source code.
+
+As required by the GPL, the complete source code is available in this repository. If you distribute modified versions, you must also make your source code available under the same license.
