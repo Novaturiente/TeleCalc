@@ -23,6 +23,8 @@ import java.util.ArrayList;
 
 public class CalculatorActivity extends Activity {
 
+    public static long lastUnlockTime = 0;
+
     private static final String PREFS_NAME = "calculator_prefs";
     private static final String KEY_SETUP_COMPLETE = "setup_complete";
     private static final String KEY_SECRET_HASH = "secret_hash";
@@ -427,6 +429,7 @@ public class CalculatorActivity extends Activity {
     // ========================
 
     private void unlockTelegram() {
+        lastUnlockTime = android.os.SystemClock.elapsedRealtime();
         Intent intent = new Intent(this, LaunchActivity.class);
         startActivity(intent);
         overridePendingTransition(0, 0);

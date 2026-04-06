@@ -6781,6 +6781,20 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
     @Override
     protected void onResume() {
         super.onResume();
+
+        // Calculator decoy: redirect to calculator when returning from background
+        SharedPreferences calcPrefs = getSharedPreferences("calculator_prefs", MODE_PRIVATE);
+        if (calcPrefs.getBoolean("setup_complete", false)) {
+            long timeSinceUnlock = android.os.SystemClock.elapsedRealtime() - CalculatorActivity.lastUnlockTime;
+            if (timeSinceUnlock > 1500) {
+                Intent calcIntent = new Intent(this, CalculatorActivity.class);
+                calcIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(calcIntent);
+                overridePendingTransition(0, 0);
+                return;
+            }
+        }
+
         isResumed = true;
         pipActivityHandler.onResume();
         if (onResumeStaticCallback != null) {
